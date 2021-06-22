@@ -128,7 +128,7 @@ latex_elements = {
 # [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'cf_signer.tex',
-     'CloudFormation Signing Utility Documentation',
+     'cf-signer Documentation',
      'Avishay Bar', 'manual'),
 ]
 
@@ -139,7 +139,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     (master_doc, 'cf_signer',
-     'CloudFormation Signing Utility Documentation',
+     'cf-signer Documentation',
      [author], 1)
 ]
 
@@ -151,7 +151,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'cf_signer',
-     'CloudFormation Signing Utility Documentation',
+     'cf-signer Documentation',
      author,
      'cf_signer',
      'One line description of project.',

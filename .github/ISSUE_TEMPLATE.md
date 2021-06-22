@@ -1,4 +1,4 @@
-* CloudFormation Signing Utility version:
+* ``cf-signer`` version:
 * Python version:
 * Operating System:
 

@@ -28,9 +28,38 @@ Features
 
 * Signing CloudFormation templates by creating a sha256 hash of the file, encrypted with the user's private key and store base64 form of the signature in the CloudFormation template ``Metadata`` section.
 * Verifying the integrity of CloudFormation templates by looking for the signature in the ``Metadata``, extracting it and verifying.
+* Currently support ``JSON`` templates only. If you need to convert your template from ``YAML`` format, take a look on the CloudFormation Designer conversion or use a 3rd party utility.
 
 Usage
 -----
+
+Installation
+============
+To install ``cf-signer``, run this command in your terminal::
+
+  pip install cf_signer
+
+Preparation
+===========
+
+First, the utility provides the ``prepare`` functionality that does the following:
+
+* Reading your template ``JSON`` file
+
+* Converting the template to Python dictionary object.
+
+* Converting the Python dictionary object back to a ``JSON`` file.
+
+This is done to ensure that the tool will not tamper the template contents during the signing process.
+
+To prepare a CloudFormation template to the signing process::
+
+  cf_signer --prepare --template cf.template
+
+This will create a cf-prepared.template file you can sign using the ``cf-signer`` tool.
+
+Getting Started
+===============
 
 To sign a CloudFormation template using the ``cf-signer`` tool::
 
@@ -41,7 +70,7 @@ To verify a signature of a CloudFormation template using the ``cf-signer`` tool:
   cf_signer --verify --template cf-signed.template --key pubkey.pem
 
 Signing Flow
-------------
+~~~~~~~~~~~~
 
 The process of signing is based on the following flow:
 
@@ -58,13 +87,13 @@ The process of signing is based on the following flow:
     openssl dgst -sha256 -sign key.pem -out sign.sha256 cf.template
 
 * Convert the signature to base64 string::
-    
+
     base64 -i sign.sha256 -o sign.b64
 
 * Attach the base64 signature to the CloudFormation template, under the ``Metadata`` block (creating one if it doesn't exist).
 
 Verification Flow
------------------
+~~~~~~~~~~~~~~~~~
 
 The process of signature verification is based on the following flow:
 

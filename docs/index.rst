@@ -1,4 +1,4 @@
-Welcome to CloudFormation Signing Utility's documentation!
+Welcome to CF-Signer documentation!
 ==========================================================
 
 .. toctree::
