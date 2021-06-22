@@ -107,3 +107,4 @@ ENV/
 
 # Test created resources
 cf-signed.template
+cf-unprepared-prepared.template

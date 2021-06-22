@@ -25,7 +25,7 @@ def test_verify_signature():
 
 
 def test_verify_wrong_signature():
-    """Test the verify action."""
+    """Test the verify action with an invalid public key."""
     runner = CliRunner()
     verify_result = runner.invoke(cli.main,
                                   ['--verify', '--template', 'tests/cf-signed.template', '--key', 'tests/wrongpubkey.pem'])
@@ -34,9 +34,17 @@ def test_verify_wrong_signature():
 
 
 def test_verify_wrong_template():
-    """Test the verify action."""
+    """Test the verify action with a tampered template."""
     runner = CliRunner()
     verify_result = runner.invoke(cli.main,
                                   ['--verify', '--template', 'tests/cf-tampered.template', '--key', 'tests/pubkey.pem'])
     assert verify_result.exit_code == 1
     assert 'Error validating template integrity' in verify_result.output
+
+
+def test_prepare_template():
+    """Test the prepare template action."""
+    runner = CliRunner()
+    prepare_result = runner.invoke(cli.main, ['--prepare', '--template', 'tests/cf-unprepared.template'])
+    assert prepare_result.exit_code == 0
+    assert 'Template preparation completed successfully' in prepare_result.output

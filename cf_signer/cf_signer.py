@@ -134,3 +134,23 @@ def verify_signature(target_file_path: str, key_file_path: str, logger: logging.
         click.echo('Error validating template integrity')
         logger.error('Error validating template integrity: ' + str(e))
         raise
+
+
+def prepare_template(target_file_path: str, logger: logging.Logger):
+    logger.debug('Preparing template...')
+
+    try:
+        # Cleaning the template and converting it to 2 spaces indentation JSON
+        with open(target_file_path, 'r+') as file:
+            file_name_without_ext = os.path.splitext(target_file_path)[0]
+            file_ext = os.path.splitext(target_file_path)[1]
+            with open(file_name_without_ext + '-prepared' + file_ext, 'w') as signed_file:
+                file_data = json.load(file)
+                file.seek(0)
+                json.dump(file_data, signed_file, indent=2)
+                click.echo('Template preparation completed successfully')
+                logger.debug('Template preparation completed successfully')
+    except Exception as e:
+        click.echo('Error preparing template')
+        logger.error('Error preparing template: ' + str(e))
+        raise
