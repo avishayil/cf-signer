@@ -12,7 +12,7 @@ with open('HISTORY.rst') as history_file:
 
 requirements = ['Click>=7.0', 'PyOpenSSL>=20.0.1']
 
-test_requirements = ['pytest>=3', ]
+test_requirements = ['pytest>=3', 'flake8>=3.7.8']
 
 setup(
     author="Avishay Bar",
@@ -43,6 +43,9 @@ setup(
     packages=find_packages(include=['cf_signer', 'cf_signer.*']),
     test_suite='tests',
     tests_require=test_requirements,
+    extras_require={
+        'develop': test_requirements,
+    },
     url='https://github.com/avishayil/cf-signer',
     version='0.0.1',
     zip_safe=False,

@@ -11,11 +11,13 @@ stdout_handler.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
 stdout_handler.setLevel(logging.INFO)
 logger.setLevel(logging.INFO)
 
+
 @click.command()
 @click.option('-s', '--sign', is_flag=True, help='Sign a CloudFormation template')
 @click.option('-v', '--verify', is_flag=True, help='Verify the integrity of a CloudFormation template')
 @click.option('-t', '--template', is_flag=False, required=True, help='Relative path of a CloudFormation template file')
-@click.option('-k', '--key', is_flag=False, required=True, help='Relative path of a private / public key, depends on the operation')
+@click.option('-k', '--key', is_flag=False, required=True,
+              help='Relative path of a private / public key, depends on the operation')
 @click.option('-d', '--debug', is_flag=True, required=True, help='View debug messages')
 def main(sign: bool, verify: bool, template: str, key: str, debug: bool):
     """Tool for Signing and Verifying Signatures of Cloud Templates"""
