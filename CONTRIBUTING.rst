@@ -68,7 +68,7 @@ Ready to contribute? Here's how to set up `cf_signer` for local development.
 
     $ mkvirtualenv cf_signer
     $ cd cf_signer/
-    $ python setup.py develop
+    $ pip install -e ".[testing]"
 
 4. Create a branch for local development::
 

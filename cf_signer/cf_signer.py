@@ -12,8 +12,7 @@ import click
 from OpenSSL import crypto
 
 
-def create_signature(target_file_path: str, key_file_path: str, logger:logging.Logger ):
-
+def create_signature(target_file_path: str, key_file_path: str, logger: logging.Logger):
     # Creating signature
 
     logger.debug('Evaluate key and target file...')
@@ -50,7 +49,7 @@ def create_signature(target_file_path: str, key_file_path: str, logger:logging.L
         sign_base64_bytes = base64.b64encode(signature)
         sign_base64 = sign_base64_bytes.decode()
     except Exception as e:
-        click.echo('Error validating private key format')
+        click.echo('Error creating base64 signature')
         logger.error('Error creating base64 signature: ' + str(e))
         raise
 
@@ -67,16 +66,15 @@ def create_signature(target_file_path: str, key_file_path: str, logger:logging.L
                 file_data.update(new_data)
                 file.seek(0)
                 json.dump(file_data, signed_file, indent=2)
-                click.echo('Signing completed succesfully.')
-                logger.debug('Signing completed succesfully.')
+                click.echo('Signing completed successfully')
+                logger.debug('Signing completed successfully')
     except Exception as e:
         click.echo('Error attaching signature')
         logger.error('Error attaching signature: ' + str(e))
         raise
 
 
-def verify_signature(target_file_path: str, key_file_path: str, logger:logging.Logger):
-
+def verify_signature(target_file_path: str, key_file_path: str, logger: logging.Logger):
     logger.debug('Detaching signature...')
 
     try:
@@ -125,10 +123,10 @@ def verify_signature(target_file_path: str, key_file_path: str, logger:logging.L
 
     try:
         verify = crypto.verify(x509, signature, data, 'sha256')
-        if (verify == None):
-            click.echo('Signature verification completed succesfully.')
-            logger.debug('Signature verification completed succesfully.')
-            
+        if verify is None:
+            click.echo('Signature verification completed successfully')
+            logger.debug('Signature verification completed successfully')
+
         else:
             click.echo('Signature verification failed from unknown reason')
             logger.error('Signature verification failed from unknown reason')

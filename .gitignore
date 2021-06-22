@@ -103,6 +103,7 @@ ENV/
 
 # IDE settings
 .vscode/
+.idea/
 
 # Test created resources
 cf-signed.template
