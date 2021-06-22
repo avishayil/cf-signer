@@ -38,8 +38,8 @@ and "help wanted" is open to whoever wants to implement it.
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
 
-CloudFormation Signing Utility could always use more documentation, whether as part of the
-official CloudFormation Signing Utility docs, in docstrings, or even on the web in blog posts,
+``cf-signer`` could always use more documentation, whether as part of the
+official ``cf-signer`` docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 Submit Feedback
