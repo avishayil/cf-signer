@@ -37,7 +37,7 @@ Installation
 ============
 To install ``cf-signer``, run this command in your terminal::
 
-  pip install cf_signer
+  pip install cf-signer
 
 Preparation
 ===========
@@ -56,7 +56,7 @@ To prepare a CloudFormation template to the signing process::
 
   cf_signer --prepare --template cf.template
 
-This will create a cf-prepared.template file you can sign using the ``cf-signer`` tool.
+This will create a ``cf-prepared.template`` file you can sign using the ``cf-signer`` tool.
 
 Getting Started
 ===============
@@ -68,6 +68,15 @@ To sign a CloudFormation template using the ``cf-signer`` tool::
 To verify a signature of a CloudFormation template using the ``cf-signer`` tool::
 
   cf_signer --verify --template cf-signed.template --key pubkey.pem
+
+You can also use cf_signer in your ``Python`` code to sign templates on your scripts:
+
+.. code-block:: python
+
+  import cf_signer
+
+  def main():
+      sign_result = create_signature(target_file_path='tests/cf.template', key_file_path='tests/key.pem') # Returns True
 
 Signing Flow
 ~~~~~~~~~~~~

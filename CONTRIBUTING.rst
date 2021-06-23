@@ -68,7 +68,7 @@ Ready to contribute? Here's how to set up `cf_signer` for local development.
 
     $ mkvirtualenv cf_signer
     $ cd cf_signer/
-    $ pip install -e ".[testing]"
+    $ pip install -e ".[develop]"
 
 4. Create a branch for local development::
 
@@ -80,7 +80,7 @@ Ready to contribute? Here's how to set up `cf_signer` for local development.
    tests, including testing other Python versions with tox::
 
     $ flake8 cf_signer tests
-    $ python setup.py test or pytest
+    $ pytest -v
     $ tox
 
    To get flake8 and tox, just pip install them into your virtualenv.

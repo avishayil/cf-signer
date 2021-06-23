@@ -1,15 +1,11 @@
+# pylint: disable=no-value-for-parameter
+
 """Console script for cf_signer."""
 import sys
-import logging
 import click
 
 from cf_signer.cf_signer import create_signature, verify_signature, prepare_template
-
-logger = logging.getLogger(__name__)
-stdout_handler = logging.StreamHandler(sys.stdout)
-stdout_handler.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
-stdout_handler.setLevel(logging.INFO)
-logger.setLevel(logging.INFO)
+from cf_signer.utils import init_logger
 
 
 @click.command()
@@ -18,20 +14,22 @@ logger.setLevel(logging.INFO)
 @click.option('-v', '--verify', is_flag=True, help='Verify the integrity of a CloudFormation template')
 @click.option('-t', '--template', is_flag=False, help='Relative path of a CloudFormation template file')
 @click.option('-k', '--key', is_flag=False, help='Relative path of a private / public key, depends on the operation')
-@click.option('-d', '--debug', is_flag=True, help='View debug messages')
-def main(prepare: bool, sign: bool, verify: bool, template: str, key: str, debug: bool):
+def main(prepare: bool, sign: bool, verify: bool, template: str, key: str) -> int:
     """Tool for Signing and Verifying Signatures of Cloud Templates"""
-    if debug:
-        logger.addHandler(stdout_handler)
-        stdout_handler.setLevel(logging.DEBUG)
-        logger.setLevel(logging.DEBUG)
+
+    init_logger()
+
     if prepare:
-        prepare_template(target_file_path=template, logger=logger)
+        if prepare_template(target_file_path=template, from_cli=True) is True:
+            sys.exit(0)
     if sign:
-        create_signature(target_file_path=template, key_file_path=key, logger=logger)
+        if create_signature(target_file_path=template, key_file_path=key, from_cli=True) is True:
+            sys.exit(0)
     if verify:
-        verify_signature(target_file_path=template, key_file_path=key, logger=logger)
+        if verify_signature(target_file_path=template, key_file_path=key, from_cli=True) is True:
+            sys.exit(0)
+    sys.exit(1)
 
 
 if __name__ == "__main__":
-    sys.exit(main())  # pragma: no cover
+    main()  # pragma: no cover

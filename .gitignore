@@ -108,3 +108,6 @@ ENV/
 # Test created resources
 cf-signed.template
 cf-unprepared-prepared.template
+
+# Debug logs
+debug.log
