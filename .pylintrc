@@ -1,0 +1,13 @@
+[MASTER]
+init-hook=
+    try: import pylint_venv
+    except ImportError: pass
+    else: pylint_venv.inithook()
+
+[FORMAT]
+max-line-length=200
+max-args=20
+max-locals=20
+
+[MESSAGES CONTROL]
+disable=W0703
