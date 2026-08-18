@@ -1,50 +1,73 @@
 #!/usr/bin/env python
 
-"""Tests for `cf_signer` CLI utility."""
+"""Tests for the ``cf_signer`` command line interface."""
 
 from click.testing import CliRunner
+
 from cf_signer import cli
 
 
-def test_create_signature_cli():
-    """Test the signing action."""
+def test_prepare_cli(unprepared_template_path):
+    """The --prepare command normalizes a template and exits 0."""
     runner = CliRunner()
-    sign_result = runner.invoke(cli.main, ['--sign', '--template', 'tests/cf.template', '--key', 'tests/key.pem'])
-    assert sign_result.exit_code == 0
-    assert 'Signing completed successfully' in sign_result.output
+    result = runner.invoke(
+        cli.main, ["--prepare", "--template", str(unprepared_template_path)]
+    )
+    assert result.exit_code == 0
+    assert "Template preparation completed successfully" in result.output
 
 
-def test_verify_signature_cli():
-    """Test the verify action."""
+def test_sign_cli(template_path, private_key_path):
+    """The --sign command signs a template and exits 0."""
     runner = CliRunner()
-    verify_result = runner.invoke(cli.main,
-                                  ['--verify', '--template', 'tests/cf-signed.template', '--key', 'tests/pubkey.pem'])
-    assert verify_result.exit_code == 0
-    assert 'Signature verification completed successfully' in verify_result.output
+    result = runner.invoke(
+        cli.main,
+        ["--sign", "--template", str(template_path), "--key", str(private_key_path)],
+    )
+    assert result.exit_code == 0
+    assert "Signing completed successfully" in result.output
 
 
-def test_verify_wrong_signature_cli():
-    """Test the verify action with an invalid public key."""
+def test_verify_cli(signed_template_path, public_key_path):
+    """The --verify command succeeds for a valid signature and exits 0."""
     runner = CliRunner()
-    verify_result = runner.invoke(cli.main,
-                                  ['--verify', '--template', 'tests/cf-signed.template', '--key',
-                                   'tests/wrongpubkey.pem'])
-    assert verify_result.exit_code == 1
-    assert 'Error validating template integrity' in verify_result.output
+    result = runner.invoke(
+        cli.main,
+        ["--verify", "--template", str(signed_template_path), "--key", str(public_key_path)],
+    )
+    assert result.exit_code == 0
+    assert "Signature verification completed successfully" in result.output
 
 
-def test_verify_wrong_template_cli():
-    """Test the verify action with a tampered template."""
+def test_verify_wrong_key_cli(signed_template_path, wrong_public_key_path):
+    """The --verify command fails with a mismatched public key and exits 1."""
     runner = CliRunner()
-    verify_result = runner.invoke(cli.main,
-                                  ['--verify', '--template', 'tests/cf-tampered.template', '--key', 'tests/pubkey.pem'])
-    assert verify_result.exit_code == 1
-    assert 'Error validating template integrity' in verify_result.output
+    result = runner.invoke(
+        cli.main,
+        [
+            "--verify",
+            "--template",
+            str(signed_template_path),
+            "--key",
+            str(wrong_public_key_path),
+        ],
+    )
+    assert result.exit_code == 1
+    assert "Error validating template integrity" in result.output
 
 
-def test_prepare_template_cli():
-    """Test the prepare template action."""
+def test_verify_tampered_template_cli(tampered_template_path, public_key_path):
+    """The --verify command fails for a tampered template and exits 1."""
     runner = CliRunner()
-    prepare_result = runner.invoke(cli.main, ['--prepare', '--template', 'tests/cf-unprepared.template'])
-    assert prepare_result.exit_code == 0
-    assert 'Template preparation completed successfully' in prepare_result.output
+    result = runner.invoke(
+        cli.main,
+        [
+            "--verify",
+            "--template",
+            str(tampered_template_path),
+            "--key",
+            str(public_key_path),
+        ],
+    )
+    assert result.exit_code == 1
+    assert "Error validating template integrity" in result.output
