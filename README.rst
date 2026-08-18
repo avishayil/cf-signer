@@ -1,3 +1,10 @@
+.. image:: .github/brand/hero.png
+   :target: https://avishay.co.il
+   :alt: Avishay Bar — Security // AI // Engineering. Secure the AI you build, and the AI you run.
+   :width: 100%
+
+----
+
 ==========================================
 CF-Signer - CloudFormation Signing Utility
 ==========================================
