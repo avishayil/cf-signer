@@ -6,8 +6,9 @@ CF-Signer - CloudFormation Signing Utility
 .. image:: https://img.shields.io/pypi/v/cf-signer.svg
         :target: https://pypi.python.org/pypi/cf-signer
 
-.. image:: https://img.shields.io/travis/avishayil/cf-signer.svg
-        :target: https://travis-ci.com/avishayil/cf-signer
+.. image:: https://github.com/avishayil/cf-signer/actions/workflows/ci.yml/badge.svg
+        :target: https://github.com/avishayil/cf-signer/actions/workflows/ci.yml
+        :alt: CI Status
 
 .. image:: https://readthedocs.org/projects/cf-signer/badge/?version=latest
         :target: https://cf-signer.readthedocs.io/en/latest/?version=latest
@@ -54,7 +55,7 @@ This is done to ensure that the tool will not tamper the template contents durin
 
 To prepare a CloudFormation template to the signing process::
 
-  cf_signer --prepare --template cf.template
+  cf-signer --prepare --template cf.template
 
 This will create a ``cf-prepared.template`` file you can sign using the ``cf-signer`` tool.
 
@@ -63,11 +64,11 @@ Getting Started
 
 To sign a CloudFormation template using the ``cf-signer`` tool::
 
-  cf_signer --sign --template cf.template --key key.pem
+  cf-signer --sign --template cf.template --key key.pem
 
 To verify a signature of a CloudFormation template using the ``cf-signer`` tool::
 
-  cf_signer --verify --template cf-signed.template --key pubkey.pem
+  cf-signer --verify --template cf-signed.template --key pubkey.pem
 
 You can also use ``cf_signer`` in your ``Python`` code to sign templates on your scripts:
 
