@@ -1,12 +1,6 @@
-pip==19.2.3
-bump2version==0.5.11
-wheel==0.38.0
-watchdog==0.9.0
-flake8==3.7.8
-tox==3.14.0
-coverage==4.5.4
-Sphinx==3.0.4
-twine==1.14.0
-Click==7.0
-pytest==6.2.4
-setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
+# Development dependencies are defined in pyproject.toml under
+# [project.optional-dependencies] dev. Install them with:
+#
+#   pip install -e .[dev]
+#
+-e .[dev]

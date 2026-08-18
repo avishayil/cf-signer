@@ -7,9 +7,18 @@ import os
 import base64
 import json
 
-from OpenSSL import crypto
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives.serialization import pkcs12
 
 from cf_signer.utils import get_logger, click_echo
+
+# RSA PKCS#1 v1.5 signatures over a SHA-256 digest. This matches the scheme
+# previously produced by PyOpenSSL's ``crypto.sign``/``crypto.verify`` and by
+# ``openssl dgst -sha256 -sign``, so existing signatures remain verifiable.
+_HASH_ALGORITHM = hashes.SHA256()
+_PADDING = padding.PKCS1v15()
 
 
 def create_signature(target_file_path: str, key_file_path: str, from_cli: bool = False) -> bool:
@@ -30,10 +39,10 @@ def create_signature(target_file_path: str, key_file_path: str, from_cli: bool =
     logger.debug('Evaluate key and target file...')
 
     try:
-        with open(key_file_path, 'r+') as key_file:
-            with open(target_file_path, 'r+') as target_file:
-                target_file_contents = target_file.read()
-                key_file_contents = key_file.read()
+        with open(key_file_path, 'rb') as key_file:
+            key_file_contents = key_file.read()
+        with open(target_file_path, 'r') as target_file:
+            target_file_contents = target_file.read()
     except Exception as ex:
         click_echo('Failed to evaluate key / target file', from_cli)
         logger.debug('Failed to evaluate key / target file: %s', str(ex))
@@ -42,10 +51,10 @@ def create_signature(target_file_path: str, key_file_path: str, from_cli: bool =
     logger.debug('Validating private key format...')
 
     try:
-        if key_file_contents.startswith('-----BEGIN '):
-            pkey = crypto.load_privatekey(crypto.FILETYPE_PEM, key_file_contents)
+        if key_file_contents.startswith(b'-----BEGIN '):
+            pkey = serialization.load_pem_private_key(key_file_contents, password=None)
         else:
-            pkey = crypto.load_pkcs12(key_file).get_privatekey()
+            pkey, _cert, _extra = pkcs12.load_key_and_certificates(key_file_contents, password=None)
         data = str.encode(target_file_contents)
     except Exception as ex:
         click_echo('Error validating private key format', from_cli)
@@ -55,7 +64,7 @@ def create_signature(target_file_path: str, key_file_path: str, from_cli: bool =
     logger.debug('Creating base64 signature...')
 
     try:
-        signature = crypto.sign(pkey, data, 'sha256')
+        signature = pkey.sign(data, _PADDING, _HASH_ALGORITHM)
 
         # Convert signature to base64 signature
         sign_base64_bytes = base64.b64encode(signature)
@@ -121,17 +130,16 @@ def verify_signature(target_file_path: str, key_file_path: str, from_cli: bool =
         logger.debug('Error detaching signature: %s', str(ex))
         return False
 
-    logger.debug('Creating signature certificate from public key...')
+    logger.debug('Loading public key...')
 
     try:
         sign_base64_bytes = sign_base64.encode()
         signature = base64.b64decode(sign_base64_bytes)
 
-        # Signature verification
-        public_key_data = open(key_file_path, 'r').read()
-        pkey = crypto.load_publickey(crypto.FILETYPE_PEM, public_key_data)
-        x509 = crypto.X509()
-        x509.set_pubkey(pkey)
+        # Load the RSA public key used to verify the signature
+        with open(key_file_path, 'rb') as public_key_file:
+            public_key_data = public_key_file.read()
+        pkey = serialization.load_pem_public_key(public_key_data)
     except Exception as ex:
         click_echo('Error creating signature certificate', from_cli)
         logger.debug('Error creating signature certificate: %s', str(ex))
@@ -150,13 +158,16 @@ def verify_signature(target_file_path: str, key_file_path: str, from_cli: bool =
     logger.debug('Verifying integrity...')
 
     try:
-        if crypto.verify(x509, signature, data, 'sha256') is None:
-            click_echo('Signature verification completed successfully', from_cli)
-            logger.debug('Signature verification completed successfully')
-            return True
+        # ``verify`` returns None on success and raises ``InvalidSignature``
+        # when the signature does not match the data / public key.
+        pkey.verify(signature, data, _PADDING, _HASH_ALGORITHM)
+        click_echo('Signature verification completed successfully', from_cli)
+        logger.debug('Signature verification completed successfully')
+        return True
 
-        click_echo('Signature verification failed from unknown reason', from_cli)
-        logger.debug('Signature verification failed from unknown reason')
+    except InvalidSignature as ex:
+        click_echo('Error validating template integrity', from_cli)
+        logger.debug('Signature verification failed: %s', str(ex))
         return False
 
     except Exception as ex:
